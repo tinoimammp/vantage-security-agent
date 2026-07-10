@@ -1,0 +1,20 @@
+# Generated run artifacts (real engagement output — never commit real findings/scope)
+artifacts/recon/scope.json
+artifacts/recon/endpoints.json
+artifacts/recon/recon.json
+artifacts/recon/mobile-recon.json
+artifacts/mapping/attack-surface.json
+artifacts/mapping/mobile-attack-surface.json
+artifacts/findings/raw-findings.*.json
+artifacts/findings/validated-findings.json
+artifacts/poc/F-*.md
+artifacts/fixes/F-*.md
+artifacts/reports/report.md
+
+# scan-diff / fix-diff output (per-run, accumulates by design — see README)
+artifacts/commit-scans/
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.swp

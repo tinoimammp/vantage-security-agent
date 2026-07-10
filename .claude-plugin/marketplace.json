@@ -1,0 +1,14 @@
+{
+  "name": "vantage",
+  "owner": {
+    "name": "Tino Imam M P"
+  },
+  "description": "Marketplace for the vantage AI SAST plugin (web + mobile pentest pipeline).",
+  "plugins": [
+    {
+      "name": "vantage",
+      "source": "./",
+      "description": "Artifact-driven, multi-agent SAST pipeline for web and mobile app repositories. Web agents cover the OWASP Top 10; mobile agents cover the OWASP Mobile Top 10 (2024, M1-M10)."
+    }
+  ]
+}
