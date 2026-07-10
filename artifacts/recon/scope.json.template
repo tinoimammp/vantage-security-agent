@@ -1,0 +1,22 @@
+{
+  "_INSTRUCTIONS": "AI agents: auto-generate this file if missing. Replace <PLACEHOLDERS> with actual values or use defaults. Use system timestamp for dates. Never block the pipeline.",
+  "engagement": "WebApp Security Assessment <CURRENT_YEAR-MONTH>",
+  "authorized_by": "security@target.example",
+  "target_type": "repository",
+  "platform": "web",
+  "_platform_note": "web (default, fully wired end-to-end via skill/commands) | mobile (agents/mobile/* + knowledge/owasp-mobile-top10.md exist, but orchestration doesn't auto-dispatch them yet — agents/web/recon-agent.md refuses and points to agents/mobile/mobile-recon-agent.md; invoke mobile agents explicitly for now)",
+  "repository_path": "<ABSOLUTE_PATH_TO_REPO>",
+  "analysis_scope": {
+    "code_only": true,
+    "no_execution": true,
+    "note": "SAST mode - analyze source code, do not run application or send requests",
+    "include_paths": ["src/", "app/", "lib/", "routes/", "controllers/", "config/"],
+    "exclude_paths": ["node_modules/", "vendor/", "dist/", "build/", "*.min.js", "tests/fixtures/"]
+  },
+  "started_at": "<SYSTEM_TIMESTAMP_NOW>",
+  "constraints": {
+    "read_only": true,
+    "no_secret_exfiltration": true,
+    "redact_secrets_in_artifacts": true
+  }
+}
