@@ -1,7 +1,7 @@
 ---
 name: recon-agent
 description: >
-  SAST reconnaissance specialist. Invoke first in the pentest-sast pipeline,
+  SAST reconnaissance specialist. Invoke first in the vantage pipeline,
   before any other testing agent, once artifacts/recon/scope.json exists.
   Statically parses source code (routes, controllers, config, dependencies,
   auth patterns) to build the application's attack surface map — never runs

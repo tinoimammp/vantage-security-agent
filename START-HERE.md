@@ -130,7 +130,7 @@ Example scope.json structure (this is a **SAST / repository** target — no URLs
 placeholder values. Document assumptions in the `engagement` field. Never block.
 
 **`platform` field:** `"web"` (default) and `"mobile"` (Android/iOS, OWASP
-Mobile Top 10 2024) are both fully wired end-to-end. The `pentest-sast` skill
+Mobile Top 10 2024) are both fully wired end-to-end. The `vantage` skill
 and the `/vantage:scan-web` / `/vantage:scan-mobile` commands each force
 their platform and route Phases 01-03 to the matching agent set — see
 `${CLAUDE_PLUGIN_ROOT}/workflow/orchestration.md` "Platform Routing".

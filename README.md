@@ -144,7 +144,7 @@ and writes `artifacts/fixes/<id>.md`. It never runs a build or test suite —
 ```
 vantage/                       (plugin install dir)
 ├── commands/                  6 slash commands
-├── skills/pentest-sast/       orchestration skill
+├── skills/vantage/            orchestration skill
 ├── agents/web/                12 web agents
 ├── agents/mobile/             12 mobile agents
 ├── agents/others/             4 shared agents (validate, PoC, report, fix)

@@ -1,5 +1,5 @@
 ---
-name: pentest-sast
+name: vantage
 description: >
   Autonomous, artifact-driven SAST (Static Application Security Testing) for
   web AND mobile app repositories, plus optional code-level remediation. Use
