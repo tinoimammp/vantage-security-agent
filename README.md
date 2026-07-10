@@ -118,15 +118,17 @@ See `examples/sample-report.md` (web) / `examples/sample-mobile-report.md`
 ## Fixing Findings
 
 ```
-/vantage:fix-issue F-001     # fix one finding
+/vantage:fix-issue F-001     # fix one finding from a full scan
 /vantage:fix                 # fix every validated finding, one at a time
+/vantage:fix-diff a1b2c3d F-001   # fix a finding from /vantage:scan-diff instead
 ```
 
 This is the **only** part of the framework that edits your source code.
 `fix-agent` re-locates the vulnerable pattern (it may have moved since the
 scan), applies the smallest edit that implements the finding's remediation,
-and writes `artifacts/fixes/<id>.md`. It never runs a build or test suite —
-**always review `git diff` and run your own tests before committing.**
+and writes `artifacts/fixes/<id>.md` (or `artifacts/commit-scans/<id>/fixes/<id>.md`
+for `fix-diff`). It never runs a build or test suite — **always review
+`git diff` and run your own tests before committing.**
 
 ---
 
