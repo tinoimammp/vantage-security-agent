@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://vantage/schemas/finding.schema.json",
+  "title": "Finding",
+  "description": "A security finding (candidate or validated).",
+  "type": "object",
+  "required": [
+    "id", "title", "category", "severity",
+    "description", "impact", "evidence", "confidence", "validated", "remediation"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^[Ff]-[0-9]{3,}$", "description": "e.g. F-001" },
+    "title": { "type": "string", "minLength": 8 },
+    "platform": { "type": "string", "enum": ["web", "mobile"], "description": "Which pipeline produced this finding" },
+    "category": {
+      "type": "string",
+      "enum": [
+        "Authentication", "Authorization", "IDOR", "BOLA", "BFLA",
+        "SQL Injection", "NoSQL Injection", "XSS", "CSRF", "SSRF",
+        "Command Injection", "Code Injection", "SSTI", "Path Traversal",
+        "XXE", "LDAP Injection",
+        "File Upload", "Mass Assignment", "JWT", "Rate Limiting",
+        "Business Logic", "Race Condition", "Information Disclosure",
+        "Vulnerable Dependency", "Hardcoded Secret", "Cryptographic Failure",
+        "Security Misconfiguration", "GraphQL", "Other",
+        "Improper Credential Usage", "Inadequate Supply Chain Security",
+        "Insecure Communication", "Inadequate Privacy Controls",
+        "Insufficient Binary Protections", "Insecure Data Storage",
+        "Insufficient Cryptography", "Insufficient Input/Output Validation"
+      ]
+    },
+    "severity": { "type": "string", "enum": ["Critical", "High", "Medium", "Low", "Info"] },
+    "cvss": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "score": { "type": "number", "minimum": 0, "maximum": 10 },
+        "vector": { "type": "string", "description": "CVSS-like vector, e.g. AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N" }
+      }
+    },
+    "endpoint": { "type": "string", "description": "Primary affected endpoint (method + url) — web findings, or mobile findings backed by a discovered backend API call" },
+    "component": { "type": "string", "description": "Primary affected mobile component (e.g. Activity/ViewController/Fragment/Service name, or file:class) — mobile findings without a network endpoint. At least one of endpoint/component should be set." },
+    "affected_endpoints": { "type": "array", "items": { "type": "string" } },
+    "description": { "type": "string", "minLength": 20 },
+    "impact": { "type": "string", "minLength": 10 },
+    "evidence": {
+      "type": "object",
+      "description": "Code-based (SAST) evidence only. Live HTTP request/response evidence is produced later, by a human, in the PoC — never by an agent.",
+      "required": ["file", "line", "code_snippet", "data_flow"],
+      "additionalProperties": false,
+      "properties": {
+        "file": { "type": "string", "description": "Path to the source file, relative to repo root" },
+        "line": { "type": "integer", "minimum": 1, "description": "Line number of the vulnerable statement" },
+        "function": { "type": "string", "description": "Enclosing function/method/handler name" },
+        "code_snippet": { "type": "string", "description": "5-10 lines of code showing the vulnerable pattern" },
+        "user_input_source": { "type": "string", "description": "e.g. req.params.id, req.body.role" },
+        "data_flow": { "type": "string", "description": "source -> ... -> sink, e.g. req.params.id -> Order.findById() -> res.json()" },
+        "missing_check": { "type": "string", "description": "The guard/sanitizer that should exist on this path but doesn't" },
+        "notes": { "type": "string" }
+      }
+    },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "validated": { "type": "boolean" },
+    "validation_notes": { "type": "string" },
+    "remediation": { "type": "string", "minLength": 10 },
+    "references": { "type": "array", "items": { "type": "string" } },
+    "poc": { "type": "string", "description": "Path to PoC file, e.g. artifacts/poc/F-001.md" },
+    "discovered_by": { "type": "string", "description": "Agent name" },
+    "discovered_at": { "type": "string", "format": "date-time", "description": "ISO 8601 timestamp from system time when finding was discovered" }
+  }
+}

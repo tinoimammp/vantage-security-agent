@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://vantage/schemas/endpoint.schema.json",
+  "title": "Endpoint",
+  "description": "A discovered or enriched application endpoint.",
+  "type": "object",
+  "required": ["id", "method", "url", "source"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^ep-[0-9a-zA-Z]+$", "description": "Stable endpoint id, e.g. ep-001" },
+    "method": { "type": "string", "enum": ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "TRACE"] },
+    "url": { "type": "string", "description": "Normalized URL with path params templated, e.g. /api/v1/orders/{id}" },
+    "source": { "type": "string", "enum": ["route-definition", "js-static", "swagger", "sitemap", "robots", "graphql", "config", "manual"], "description": "How the endpoint was found via static analysis (no live discovery)" },
+    "content_type": { "type": "string", "description": "Inferred from code, e.g. res.json() implies application/json" },
+    "auth_required": { "type": "boolean", "description": "Best-guess whether auth is needed" },
+    "trust_boundary": { "type": "string", "enum": ["public", "user", "privileged", "service"] },
+    "object_type": { "type": "string", "description": "Primary object this endpoint operates on, e.g. order" },
+    "ownership": { "type": "string", "enum": ["none", "user-owned", "shared", "admin-only"] },
+    "params": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "in"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string" },
+          "in": { "type": "string", "enum": ["path", "query", "body", "header", "cookie"] },
+          "type": { "type": "string", "enum": ["string", "integer", "number", "boolean", "array", "object", "file"] },
+          "sample": { "type": ["string", "number", "boolean", "null"] },
+          "identifier": { "type": "boolean", "description": "Looks like an object identifier (IDOR candidate)" },
+          "required": { "type": "boolean" }
+        }
+      }
+    },
+    "candidate_vulns": { "type": "array", "items": { "type": "string" } },
+    "assigned_agents": { "type": "array", "items": { "type": "string" } },
+    "priority": { "type": "string", "enum": ["P0", "P1", "P2", "P3"] },
+    "notes": { "type": "string" }
+  }
+}
