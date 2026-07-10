@@ -1,0 +1,40 @@
+{
+  "generated_at": "2025-02-03T09:00:00Z",
+  "platform": "android",
+  "cross_platform_framework": null,
+  "app_purpose": "AcmeBank Mobile is a retail banking app for balance checks, fund transfers, and card management.",
+  "permissions": [
+    { "name": "android.permission.INTERNET", "justified": true, "notes": "required for all backend API calls" },
+    { "name": "android.permission.CAMERA", "justified": true, "notes": "used by CheckDepositActivity for check photo capture" },
+    { "name": "android.permission.READ_CONTACTS", "justified": false, "notes": "no contacts feature found anywhere in code; declared but unused" }
+  ],
+  "exported_components": [
+    { "type": "Activity", "name": ".DeepLinkActivity", "guarded": false, "deep_link": "acmebank://reset-password?token={token}" },
+    { "type": "Activity", "name": ".ShareReceiptActivity", "guarded": true, "deep_link": null }
+  ],
+  "webviews": [
+    { "file": "app/src/main/java/com/acmebank/support/HelpWebActivity.java", "line": 33, "js_bridge": false, "loads_user_controlled_url": false }
+  ],
+  "local_storage": [
+    { "mechanism": "SharedPreferences", "file": "app/src/main/java/com/acmebank/auth/AuthManager.java", "line": 22, "stores": "auth_token (JWT)", "encrypted": false },
+    { "mechanism": "SQLite", "file": "app/src/main/java/com/acmebank/db/AccountDao.java", "line": 58, "stores": "account_number, balance (cache)", "encrypted": false }
+  ],
+  "crypto_usage": [
+    { "file": "app/src/main/java/com/acmebank/util/CryptoUtil.java", "line": 15, "algorithm": "AES/ECB/PKCS5Padding", "issue": "ECB mode; key derived from a hardcoded 16-byte string constant" }
+  ],
+  "network": {
+    "base_urls": ["https://api.acmebank.example/v2", "http://legacy-metrics.acmebank.example"],
+    "certificate_pinning": false,
+    "cleartext_allowed": true
+  },
+  "third_party_sdks": [
+    { "name": "com.thirdparty:adtracker", "version": "4.1.0", "permissions_used": ["location", "device_id", "contacts"] },
+    { "name": "com.squareup.retrofit2:retrofit", "version": "2.9.0", "permissions_used": [] }
+  ],
+  "notable": [
+    "AndroidManifest.xml: android:debuggable is absent from the release build variant (OK), but android:allowBackup=\"true\" with no fullBackupContent exclusion.",
+    "AuthManager.java:22 stores the JWT auth token in plaintext SharedPreferences, readable via adb backup.",
+    "network_security_config.xml permits cleartextTrafficPermitted=\"true\" for legacy-metrics.acmebank.example, which receives no sensitive data currently — monitor if that changes.",
+    ".DeepLinkActivity (acmebank://reset-password) is exported with no permission guard and directly consumes the token query param."
+  ]
+}

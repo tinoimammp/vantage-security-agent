@@ -1,0 +1,76 @@
+{
+  "validated": [
+    {
+      "id": "F-001",
+      "title": "IDOR allows any user to read any order via sequential id",
+      "category": "IDOR",
+      "severity": "Critical",
+      "cvss": { "score": 8.1, "vector": "AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N" },
+      "endpoint": "GET /api/v1/orders/{id}",
+      "affected_endpoints": ["GET /api/v1/orders/{id}", "GET /api/v1/orders/{id}/invoice"],
+      "description": "The order retrieval handler fetches an order by its integer id and returns it without verifying that the requesting user owns the order. Ids are sequential and predictable, allowing enumeration of every customer's orders.",
+      "impact": "Any authenticated user can read every customer's order, exposing PII (names, addresses), order history, and invoice totals at scale. This is a privacy breach with regulatory implications.",
+      "evidence": {
+        "file": "src/controllers/orders.controller.js",
+        "line": 42,
+        "function": "getOrder",
+        "code_snippet": "async function getOrder(req, res) {\n  const order = await Order.findById(req.params.id);\n  if (!order) return res.status(404).json({ error: 'order not found' });\n  return res.json(order); // no ownership check\n}",
+        "user_input_source": "req.params.id",
+        "data_flow": "req.params.id -> Order.findById(id) -> res.json(order)",
+        "missing_check": "if (order.owner_id !== req.user.id && !req.user.isAdmin) return res.status(404).end();",
+        "notes": "Same pattern repeated in the invoice handler at src/controllers/orders.controller.js:88, which also calls Order.findById() directly."
+      },
+      "confidence": 1.0,
+      "validated": true,
+      "validation_notes": "Re-traced source-to-sink path independently: confirmed no ownership/role check anywhere between the route handler and the response, and no authorization middleware attached to this route in src/routes/orders.routes.js.",
+      "remediation": "Enforce object-level ownership on every order route: verify order.owner_id == session.user_id (or admin) before returning data; return 404 on mismatch. Add automated cross-user authorization tests.",
+      "references": ["OWASP A01:2025", "CWE-639", "WSTG-ATHZ-04"],
+      "poc": "artifacts/poc/F-001.md",
+      "discovered_by": "authorization-agent",
+      "discovered_at": "2025-01-10T09:14:00Z"
+    },
+    {
+      "id": "F-002",
+      "title": "Privilege escalation via mass assignment of role on user update",
+      "category": "Mass Assignment",
+      "severity": "Critical",
+      "cvss": { "score": 9.1, "vector": "AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:N" },
+      "endpoint": "PUT /api/v1/users/{id}",
+      "affected_endpoints": ["PUT /api/v1/users/{id}"],
+      "description": "The user update handler binds the entire request body onto the user model via a generic update call, including the `role` field. A regular user can set their own role to `admin`.",
+      "impact": "Any authenticated user can escalate to administrator, gaining full control over the application and all user data.",
+      "evidence": {
+        "file": "src/controllers/users.controller.js",
+        "line": 57,
+        "function": "updateUser",
+        "code_snippet": "async function updateUser(req, res) {\n  const user = await User.findById(req.params.id);\n  Object.assign(user, req.body); // binds role, isAdmin, etc.\n  await user.save();\n  return res.json(user);\n}",
+        "user_input_source": "req.body (role, isAdmin, displayName, ...)",
+        "data_flow": "req.body -> Object.assign(user, req.body) -> user.save() -> res.json(user)",
+        "missing_check": "const { displayName, avatar } = req.body; user.displayName = displayName; user.avatar = avatar; // allow-list instead of Object.assign(user, req.body)",
+        "notes": "No schema/DTO validation layer between req.body and the model; no allow-list of updatable fields."
+      },
+      "confidence": 1.0,
+      "validated": true,
+      "validation_notes": "Confirmed `role` has no server-side allow-list or admin-only guard on this route in src/routes/users.routes.js; confirmed the admin-check middleware (isAdmin) is attached to /api/v1/admin/* routes only, not to this one.",
+      "remediation": "Use an allow-list of updatable fields (displayName, avatar). Never bind privileged fields (role, isAdmin, owner_id) from client input. Enforce role changes through a separate admin-only, audited endpoint.",
+      "references": ["OWASP A01:2025", "OWASP A08:2025", "CWE-915", "WSTG-ATHZ-03"],
+      "poc": "artifacts/poc/F-002.md",
+      "discovered_by": "api-agent",
+      "discovered_at": "2025-01-10T10:02:00Z"
+    }
+  ],
+  "rejected": [
+    {
+      "id": "F-014",
+      "reason": "Value rendered via the templating engine's auto-escaping helper ({{ }} in the framework's default mode); traced the sink and confirmed output encoding is applied, so it is not exploitable as XSS."
+    }
+  ],
+  "merged": [
+    {
+      "into": "F-001",
+      "from": ["F-019"],
+      "reason": "Invoice endpoint (orders.controller.js:88) shares the same missing-ownership root cause as the order-read handler."
+    }
+  ],
+  "stats": { "received": 5, "validated": 2, "rejected": 1, "merged": 1 }
+}

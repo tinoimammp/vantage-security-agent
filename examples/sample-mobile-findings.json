@@ -1,0 +1,76 @@
+{
+  "validated": [
+    {
+      "id": "F-101",
+      "title": "Auth token (JWT) stored in plaintext SharedPreferences",
+      "category": "Insecure Data Storage",
+      "platform": "mobile",
+      "severity": "Critical",
+      "cvss": { "score": 7.6, "vector": "AV:P/AC:L/PR:N/UI:N/S:U/C:H/I:L/A:N" },
+      "component": "app/src/main/java/com/acmebank/auth/AuthManager.java",
+      "description": "AuthManager writes the session JWT to SharedPreferences via a plain putString() call, with no platform Keystore/EncryptedSharedPreferences wrapping. The value is stored in cleartext XML under the app's data directory.",
+      "impact": "Any attacker with physical/adb access to the device (or a backup extracted via allowBackup=true) can read the SharedPreferences XML file and obtain a live session token, enabling account takeover without the user's password.",
+      "evidence": {
+        "file": "app/src/main/java/com/acmebank/auth/AuthManager.java",
+        "line": 22,
+        "function": "saveSession",
+        "code_snippet": "public void saveSession(String jwt) {\n  SharedPreferences prefs = context.getSharedPreferences(\"auth\", Context.MODE_PRIVATE);\n  prefs.edit().putString(\"auth_token\", jwt).apply(); // plaintext\n}",
+        "user_input_source": "n/a — value is the session token issued at login, not user input",
+        "data_flow": "login response JWT -> AuthManager.saveSession() -> SharedPreferences (plaintext) -> read back on every API call via AuthManager.getToken()",
+        "missing_check": "Use EncryptedSharedPreferences (Jetpack Security) or store only a reference to a key held in Android Keystore, not the raw JWT.",
+        "notes": "Compounded by AndroidManifest.xml android:allowBackup=\"true\" with no fullBackupContent exclusion, so `adb backup` can extract this file without root."
+      },
+      "confidence": 0.9,
+      "validated": true,
+      "validation_notes": "Re-traced saveSession()/getToken() call sites; confirmed no EncryptedSharedPreferences or Keystore usage anywhere in the auth package, and confirmed allowBackup=true in the release manifest.",
+      "remediation": "Migrate to EncryptedSharedPreferences or store the token only in memory + Android Keystore-backed encryption. Set android:allowBackup=\"false\" or add fullBackupContent rules excluding the auth prefs file. Add a short token lifetime + refresh flow to limit exposure window.",
+      "references": ["OWASP MASVS M9:2024", "CWE-312", "CWE-922"],
+      "poc": "artifacts/poc/F-101.md",
+      "discovered_by": "mobile-storage-agent",
+      "discovered_at": "2025-02-03T10:05:00Z"
+    },
+    {
+      "id": "F-102",
+      "title": "Unguarded exported DeepLinkActivity allows triggering password reset",
+      "category": "Security Misconfiguration",
+      "platform": "mobile",
+      "severity": "Critical",
+      "cvss": { "score": 8.4, "vector": "AV:P/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:N" },
+      "component": ".DeepLinkActivity",
+      "description": "DeepLinkActivity is exported (implicitly, via an intent-filter for the acmebank:// scheme) with no permission or signature guard, and directly consumes the `token` query parameter from the incoming Intent to drive the password-reset flow, with no validation that the Intent originated from the app's own reset-password email link.",
+      "impact": "A malicious app on the same device can send an Intent to acmebank://reset-password?token=<attacker-controlled> and drive the victim's app into a reset flow using an attacker-supplied token, potentially completing an account takeover if combined with a way to obtain a valid reset token (e.g. a separate token-prediction or leakage issue).",
+      "evidence": {
+        "file": "app/src/main/java/com/acmebank/ui/DeepLinkActivity.java",
+        "line": 19,
+        "function": "onCreate",
+        "code_snippet": "protected void onCreate(Bundle b) {\n  super.onCreate(b);\n  Uri data = getIntent().getData();\n  String token = data.getQueryParameter(\"token\");\n  startResetPasswordFlow(token); // no sender/origin check\n}",
+        "user_input_source": "getIntent().getData() (deep link Uri, can originate from any app)",
+        "data_flow": "external Intent -> DeepLinkActivity.onCreate() -> startResetPasswordFlow(token)",
+        "missing_check": "Verify the Intent's calling package (getCallingPackage()) or require App Links / Digital Asset Links verification instead of a plain custom scheme, and re-validate the token server-side before acting on it.",
+        "notes": "AndroidManifest.xml declares the intent-filter with no android:permission attribute."
+      },
+      "confidence": 0.75,
+      "validated": true,
+      "validation_notes": "Confirmed the intent-filter is registered with no permission attribute in AndroidManifest.xml, and confirmed onCreate() performs no calling-package or Digital Asset Links check before acting on the token.",
+      "remediation": "Migrate from a custom URL scheme to Android App Links with Digital Asset Links (assetlinks.json) verification, which restricts which apps can trigger the link. Re-validate the reset token server-side (single-use, short-lived) regardless of client-side checks.",
+      "references": ["OWASP MASVS M8:2024", "CWE-926"],
+      "poc": "artifacts/poc/F-102.md",
+      "discovered_by": "mobile-config-agent",
+      "discovered_at": "2025-02-03T10:12:00Z"
+    }
+  ],
+  "rejected": [
+    {
+      "id": "F-118",
+      "reason": "Candidate flagged network_security_config.xml cleartextTrafficPermitted=\"true\" for legacy-metrics.acmebank.example as Critical, but re-tracing confirmed that domain only ever receives anonymous, non-sensitive analytics counters (no auth tokens, no PII) — downgraded scope makes this Low, not Critical; kept as informational in the report, not a standalone finding."
+    }
+  ],
+  "merged": [
+    {
+      "into": "F-101",
+      "from": ["F-121"],
+      "reason": "AccountDao.java's plaintext SQLite cache of account_number/balance shares the same root cause (no EncryptedSharedPreferences/Keystore usage in local persistence) as the auth-token finding — merged into one Insecure Data Storage finding covering both storage locations."
+    }
+  ],
+  "stats": { "received": 4, "validated": 2, "rejected": 1, "merged": 1 }
+}

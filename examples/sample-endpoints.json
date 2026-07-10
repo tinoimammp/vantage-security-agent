@@ -1,0 +1,116 @@
+[
+  {
+    "id": "ep-001",
+    "method": "GET",
+    "url": "/api/v1/orders/{id}",
+    "source": "swagger",
+    "content_type": "application/json",
+    "auth_required": true,
+    "trust_boundary": "user",
+    "object_type": "order",
+    "ownership": "user-owned",
+    "params": [
+      { "name": "id", "in": "path", "type": "integer", "sample": 1002, "identifier": true, "required": true }
+    ],
+    "candidate_vulns": ["IDOR", "BOLA"],
+    "assigned_agents": ["authorization-agent", "api-agent"],
+    "priority": "P0",
+    "notes": "Sequential integer ids in route; strong IDOR candidate."
+  },
+  {
+    "id": "ep-002",
+    "method": "POST",
+    "url": "/api/v1/auth/login",
+    "source": "route-definition",
+    "content_type": "application/json",
+    "auth_required": false,
+    "trust_boundary": "public",
+    "object_type": "session",
+    "ownership": "none",
+    "params": [
+      { "name": "email", "in": "body", "type": "string", "sample": "user@acme.example", "required": true },
+      { "name": "password", "in": "body", "type": "string", "sample": "REDACTED", "required": true }
+    ],
+    "candidate_vulns": ["Authentication", "Rate Limiting"],
+    "assigned_agents": ["auth-agent"],
+    "priority": "P1",
+    "notes": "Handler issues a JWT bearer token; code shows no rate-limit middleware attached to this route."
+  },
+  {
+    "id": "ep-003",
+    "method": "PUT",
+    "url": "/api/v1/users/{id}",
+    "source": "js-static",
+    "content_type": "application/json",
+    "auth_required": true,
+    "trust_boundary": "user",
+    "object_type": "user",
+    "ownership": "user-owned",
+    "params": [
+      { "name": "id", "in": "path", "type": "integer", "sample": 77, "identifier": true, "required": true },
+      { "name": "displayName", "in": "body", "type": "string", "sample": "Jane", "required": false },
+      { "name": "role", "in": "body", "type": "string", "sample": "user", "required": false }
+    ],
+    "candidate_vulns": ["Mass Assignment", "Authorization", "IDOR"],
+    "assigned_agents": ["api-agent", "authorization-agent"],
+    "priority": "P0",
+    "notes": "`role` field present in update payload; test privilege escalation."
+  },
+  {
+    "id": "ep-004",
+    "method": "GET",
+    "url": "/api/v1/products",
+    "source": "route-definition",
+    "content_type": "application/json",
+    "auth_required": false,
+    "trust_boundary": "public",
+    "object_type": "product",
+    "ownership": "none",
+    "params": [
+      { "name": "search", "in": "query", "type": "string", "sample": "shirt", "required": false },
+      { "name": "sort", "in": "query", "type": "string", "sample": "price", "required": false }
+    ],
+    "candidate_vulns": ["SQL Injection", "XSS"],
+    "assigned_agents": ["sqli-agent", "xss-agent"],
+    "priority": "P1",
+    "notes": "`search` and `sort` likely reach the database query."
+  },
+  {
+    "id": "ep-005",
+    "method": "POST",
+    "url": "/api/v1/checkout",
+    "source": "js-static",
+    "content_type": "application/json",
+    "auth_required": true,
+    "trust_boundary": "user",
+    "object_type": "order",
+    "ownership": "user-owned",
+    "params": [
+      { "name": "items", "in": "body", "type": "array", "required": true },
+      { "name": "price", "in": "body", "type": "number", "sample": 129.0, "required": false },
+      { "name": "coupon", "in": "body", "type": "string", "sample": "SAVE10", "required": false }
+    ],
+    "candidate_vulns": ["Business Logic", "Race Condition"],
+    "assigned_agents": ["business-logic-agent"],
+    "priority": "P0",
+    "notes": "Client supplies `price`; test server-side price trust and coupon abuse."
+  },
+  {
+    "id": "ep-006",
+    "method": "POST",
+    "url": "/graphql",
+    "source": "graphql",
+    "content_type": "application/json",
+    "auth_required": true,
+    "trust_boundary": "user",
+    "object_type": "graphql",
+    "ownership": "none",
+    "params": [
+      { "name": "query", "in": "body", "type": "string", "required": true }
+    ],
+    "candidate_vulns": ["GraphQL", "BOLA", "BFLA"],
+    "assigned_agents": ["api-agent"],
+    "priority": "P1",
+    "notes": "Introspection enabled in schema config. Check field-level authz and batching resolvers."
+  }
+]
