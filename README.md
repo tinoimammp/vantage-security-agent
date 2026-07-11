@@ -13,11 +13,11 @@ separate step can then apply the fix directly to your code.
 ## Install & Run
 
 ```bash
-# Local dev/testing
+# Manual installation
 git clone https://github.com/tinoimammp/vantage.git
 claude --plugin-dir /path/to/vantage
 
-# Once this repo is public on GitHub
+# Install from the marketplace (currently under review)
 /plugin marketplace add tinoimammp/vantage
 /plugin install vantage@vantage
 ```
