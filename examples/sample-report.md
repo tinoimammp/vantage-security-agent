@@ -1,7 +1,7 @@
-# Web Application Penetration Test — Report
+# Web Application Security Assessment (SAST) — Report
 
-**Engagement:** ACME WebApp Pentest 2025-01
-**Prepared by:** AI Pentest Framework (multi-agent ensemble)
+**Engagement:** ACME WebApp Security Assessment 2025-01
+**Prepared by:** Vantage (multi-agent SAST ensemble)
 **Date:** 2025-01-09
 **Version:** 1.0
 **Classification:** Confidential

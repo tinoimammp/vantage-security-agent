@@ -1,8 +1,9 @@
-# Application Penetration Test — Report
+# Application Security Assessment (SAST) — Report
 
-> Title reflects the target: "Web Application Penetration Test" or "Mobile
-> Application Penetration Test" (or both, if the engagement covered both
-> pipelines) — set per the finding set's `platform`.
+> Title reflects the target: "Web Application Security Assessment (SAST)" or
+> "Mobile Application Security Assessment (SAST)" (or both, if the engagement
+> covered both pipelines) — set per the finding set's `platform`. Do not call
+> this a "Penetration Test": no live system was accessed, see §2.2.
 
 **Engagement:** <name>
 **Prepared by:** <team / agent ensemble>

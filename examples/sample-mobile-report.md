@@ -1,7 +1,7 @@
-# Mobile Application Penetration Test — Report
+# Mobile Application Security Assessment (SAST) — Report
 
-**Engagement:** AcmeBank Mobile (Android) Pentest 2025-02
-**Prepared by:** AI Pentest Framework (multi-agent ensemble)
+**Engagement:** AcmeBank Mobile (Android) Security Assessment 2025-02
+**Prepared by:** Vantage (multi-agent SAST ensemble)
 **Date:** 2025-02-05
 **Version:** 1.0
 **Classification:** Confidential

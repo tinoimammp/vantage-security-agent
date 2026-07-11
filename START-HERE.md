@@ -1,6 +1,7 @@
-# AI Pentest Framework — START HERE
+# Vantage — AI SAST Framework — START HERE
 
-> An artifact-driven, multi-agent web application penetration testing workspace
+> An artifact-driven, multi-agent web and mobile application security
+> assessment (SAST — static analysis only, no live testing) workspace
 > designed for autonomous coding agents (Claude Code, Codex, OpenAI Agents,
 > Cursor Agents, etc.).
 
@@ -282,7 +283,7 @@ Testing order is strictly **impact-first**:
 ## 7. Quickstart for a Fresh Agent
 
 ```text
-You are an agent in the AI Pentest Framework (vantage plugin).
+You are an agent in Vantage, an AI SAST framework (vantage plugin).
 1. Read ${CLAUDE_PLUGIN_ROOT}/START-HERE.md (this file).
 2. Read ${CLAUDE_PLUGIN_ROOT}/TIMESTAMPS.md for dynamic date handling.
 3. Read ${CLAUDE_PLUGIN_ROOT}/agents/<role>.md to assume your role.
