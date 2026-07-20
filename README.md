@@ -14,8 +14,8 @@ separate step can then apply the fix directly to your code.
 
 ```bash
 # Manual installation
-git clone https://github.com/tinoimammp/vantage.git
-claude --plugin-dir /path/to/vantage
+git clone https://github.com/tinoimammp/vantage-security-agent.git
+claude --plugin-dir /path/to/vantage-security-agent
 
 # Install from the marketplace (currently under review)
 /plugin marketplace add tinoimammp/vantage
