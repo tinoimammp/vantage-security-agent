@@ -19,7 +19,7 @@ authorization, CORS misconfig, JWT/role tampering. **Also absorbs SSRF**
 - CWE-639, CWE-284, CWE-862, CWE-863, CWE-918 (SSRF).
 
 ### A02:2025 — Security Misconfiguration
-**Owner:** recon-agent, api-agent
+**Owner:** misconfiguration-agent, recon-agent, api-agent
 Default creds, verbose errors/stack traces, open admin/debug endpoints, missing
 security headers, exposed `.env`/`.git`, directory listing, unnecessary features,
 permissive CORS, insecure cloud/container/IaC config.

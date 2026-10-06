@@ -39,7 +39,7 @@ whenever you no longer need it.
      zero source files remain, stop and report "nothing to scan."
 3. Read `platform` from `./.vantage/artifacts/recon/scope.json` if it exists
    (default `web`). Don't auto-generate a full `scope.json` for this fast path.
-4. Dispatch the platform's 10 testing agents (see
+4. Dispatch the platform's testing agents (see
    `${CLAUDE_PLUGIN_ROOT}/workflow/orchestration.md` Platform Routing for the
    list) as parallel Task calls. Override their normal input for this run:
    instead of reading `artifacts/mapping/attack-surface.json`, give each

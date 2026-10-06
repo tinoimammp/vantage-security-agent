@@ -57,7 +57,7 @@ below is the complete routing.
 |-------|--------------------|------------------------|
 | 01 Recon | `${CLAUDE_PLUGIN_ROOT}/agents/web/recon-agent.md` → `endpoints.json`, `recon.json` | `${CLAUDE_PLUGIN_ROOT}/agents/mobile/mobile-recon-agent.md` → `mobile-recon.json` (+ `endpoints.json`/`recon.json` if a backend API exists) |
 | 02 Mapping | `${CLAUDE_PLUGIN_ROOT}/agents/web/mapper-agent.md` → `attack-surface.json` | `${CLAUDE_PLUGIN_ROOT}/agents/mobile/mobile-mapper-agent.md` → `mobile-attack-surface.json` |
-| 03 Testing | 10 agents in `${CLAUDE_PLUGIN_ROOT}/agents/web/`: `auth-agent`, `authorization-agent`, `api-agent`, `sqli-agent`, `xss-agent`, `upload-agent`, `business-logic-agent`, `injection-agent`, `dependency-agent`, `secrets-agent` | 10 agents in `${CLAUDE_PLUGIN_ROOT}/agents/mobile/`: `credential-usage-agent`, `supply-chain-agent`, `mobile-auth-agent`, `mobile-validation-agent`, `mobile-network-agent`, `privacy-agent`, `binary-protection-agent`, `mobile-config-agent`, `mobile-storage-agent`, `mobile-crypto-agent` (see `${CLAUDE_PLUGIN_ROOT}/knowledge/owasp-mobile-top10.md`) |
+| 03 Testing | 11 agents in `${CLAUDE_PLUGIN_ROOT}/agents/web/`: `auth-agent`, `authorization-agent`, `api-agent`, `sqli-agent`, `xss-agent`, `upload-agent`, `business-logic-agent`, `injection-agent`, `dependency-agent`, `secrets-agent`, `misconfiguration-agent` | 10 agents in `${CLAUDE_PLUGIN_ROOT}/agents/mobile/`: `credential-usage-agent`, `supply-chain-agent`, `mobile-auth-agent`, `mobile-validation-agent`, `mobile-network-agent`, `privacy-agent`, `binary-protection-agent`, `mobile-config-agent`, `mobile-storage-agent`, `mobile-crypto-agent` (see `${CLAUDE_PLUGIN_ROOT}/knowledge/owasp-mobile-top10.md`) |
 
 Phases 04–06 always dispatch `${CLAUDE_PLUGIN_ROOT}/agents/others/validator-agent.md`,
 `poc-agent.md`, `report-agent.md` — never the web or mobile agent sets — because
@@ -68,13 +68,13 @@ pipelines (`platform` field on each finding records where it came from).
 
 - **Phases run sequentially 01 → 02 → 03 → 04 → 05 → 06.** A later phase never
   starts before its gate is satisfied.
-- **Within Phase 03, the 10 testing agents for the active platform MAY run in
-  parallel** (see Platform Routing above for the web vs. mobile agent list),
-  because each only reads its platform's Phase 02 output and writes **its
-  own** `raw-findings.<agent-name>.json`. No two agents ever write the same
-  file, so true parallel Task dispatch is safe. Only one platform's 10 agents
-  run per pipeline execution — never mix web and mobile testing agents in the
-  same Phase 03 run.
+- **Within Phase 03, the testing agents for the active platform (11 web /
+  10 mobile) MAY run in parallel** (see Platform Routing above for the web
+  vs. mobile agent list), because each only reads its platform's Phase 02
+  output and writes **its own** `raw-findings.<agent-name>.json`. No two
+  agents ever write the same file, so true parallel Task dispatch is safe.
+  Only one platform's agent set runs per pipeline execution — never mix web
+  and mobile testing agents in the same Phase 03 run.
   - Each candidate finding MUST have a unique `id` (prefix per agent, e.g.
     `sqli-001`, `dep-001`).
   - `validator-agent` merges all `raw-findings.*.json` files (glob) before

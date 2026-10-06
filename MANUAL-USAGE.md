@@ -12,7 +12,7 @@ following it yourself without an AI agent at all.
 
 | | With Claude Code plugin | Manual |
 |---|---|---|
-| Dispatch | `Task` tool, Phase 03's 10 agents run in parallel | One conversation, one agent role at a time, sequential |
+| Dispatch | `Task` tool, Phase 03's testing agents (11 web / 10 mobile) run in parallel | One conversation, one agent role at a time, sequential |
 | Invocation | `/vantage:scan-web`, natural-language auto-trigger | You paste the instructions below yourself |
 | Paths | `${CLAUDE_PLUGIN_ROOT}` auto-resolved | You substitute the real folder path yourself |
 | `scope.json` | Auto-generated from the template | You copy it and fill placeholders yourself |
@@ -66,11 +66,13 @@ reading the Phase 1 output you just wrote.
 ```
 
 ```
-Phase 3 — Testing: read and run these 10 agents one at a time, each writing
+Phase 3 — Testing: read and run these 11 agents one at a time, each writing
 its own raw-findings.<agent-name>.json (never a shared file):
 auth-agent, authorization-agent, api-agent, sqli-agent, xss-agent,
 upload-agent, business-logic-agent, injection-agent, dependency-agent,
-secrets-agent (all under <vantage>/agents/web/).
+secrets-agent, misconfiguration-agent (all under <vantage>/agents/web/;
+mobile has its own 10-agent list under <vantage>/agents/mobile/, same
+pattern).
 ```
 
 ```
@@ -95,10 +97,10 @@ produce the one report.md file it specifies.
   Phase 6. If your tool supports it, start a new chat per phase (or even per
   Phase-03 agent) and just point it at the artifact files from previous
   phases — that's the whole point of the artifact-driven design.
-- **Phase 03 is 10 sequential turns here, not parallel.** Expect it to take
-  longer than in Claude Code. Running each of the 10 as its own fresh chat
-  (rather than 10 turns in one chat) gives more focused, less fatigued
-  output.
+- **Phase 03 is sequential turns here, not parallel** (11 for web, 10 for
+  mobile). Expect it to take longer than in Claude Code. Running each as
+  its own fresh chat (rather than all of them in one chat) gives more
+  focused, less fatigued output.
 - **Fixing findings** (`fix-agent`, `agents/others/fix-agent.md`) needs a
   tool that can actually write to your files. If yours can't, ask it to
   output the diff and apply it yourself.

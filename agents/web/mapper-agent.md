@@ -82,6 +82,7 @@ Map endpoint shape -> candidate vuln classes -> responsible agents:
 | LDAP filter from input | LDAP injection | injection-agent |
 | dependency manifest / lockfile | vulnerable deps (SCA) | dependency-agent |
 | config / source / key files | hardcoded secrets, crypto | secrets-agent |
+| framework/server config, CORS, IaC | security misconfiguration | misconfiguration-agent |
 
 ### 4. Data Flow & Object Ownership
 - Identify CRUD operations per object type.
@@ -129,7 +130,8 @@ Score by: **domain profile + data sensitivity + privilege + exposure**.
   "repo_wide_tasks": [
     { "priority": "P0", "task": "SCA of dependency manifests/lockfiles", "agent": "dependency-agent" },
     { "priority": "P1", "task": "Hardcoded secrets & weak-crypto sweep", "agent": "secrets-agent" },
-    { "priority": "P1", "task": "Injection sink sweep (exec/eval/template/XML/file)", "agent": "injection-agent" }
+    { "priority": "P1", "task": "Injection sink sweep (exec/eval/template/XML/file)", "agent": "injection-agent" },
+    { "priority": "P1", "task": "Security misconfiguration sweep (CORS, debug/admin endpoints, IaC, error handling)", "agent": "misconfiguration-agent" }
   ]
 }
 ```
@@ -153,6 +155,8 @@ skips them:
 - **secrets-agent** — always run across source/config/key files.
 - **injection-agent** — also run a repo-wide sink sweep (exec/eval/template/XML/file)
   in addition to its endpoint-tagged tasks in `test_plan`.
+- **misconfiguration-agent** — always run across framework/server/IaC config
+  and error-handling code.
 
 Assign each a priority with the same impact rules (e.g., exposed production
 secret or known-exploited CVE = P0).
@@ -160,7 +164,7 @@ secret or known-exploited CVE = P0).
 ## Exit Criteria
 - Every endpoint enriched, scored, and assigned.
 - `test_plan` ordered P0 -> P3.
-- `repo_wide_tasks[]` populated (deps, secrets, injection sink sweep) with priorities.
+- `repo_wide_tasks[]` populated (deps, secrets, injection sink sweep, misconfiguration sweep) with priorities.
 
 ## Handoff
 Append a line to `artifacts/run-log.md`, then notify endpoint agents per `test_plan` and repo-wide agents per `repo_wide_tasks[]`.

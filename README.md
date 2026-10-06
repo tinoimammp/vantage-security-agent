@@ -85,14 +85,14 @@ Six phases, artifact-driven (agents only talk to each other through files —
 no shared memory, so a run is resumable across sessions):
 
 ```
-Recon → Mapping → Testing (10 parallel agents) → Validation → PoC → Report
+Recon → Mapping → Testing (10-11 parallel agents, platform-dependent) → Validation → PoC → Report
 ```
 
 | Phase | Reads | Writes | What happens |
 |---|---|---|---|
 | Recon | `scope.json` | `recon.json`, `endpoints.json` | Parses source for routes, tech stack, auth patterns, domain type, and the app's critical assets — pure inventory, no prioritization yet. |
 | Mapping | `recon.json`, `endpoints.json` | `attack-surface.json` | Prioritizes every endpoint (P0-P3) by domain-aware impact and assigns each to the right testing agent(s). |
-| Testing | `attack-surface.json` (+ `recon.json`) | `raw-findings.<agent>.json` ×10 | 10 agents in parallel, each scoped to one vuln class (auth, authorization, injection, upload, ...); a shared per-stack search cheat sheet locates the relevant code fast before each agent applies its methodology. |
+| Testing | `attack-surface.json` (+ `recon.json`) | `raw-findings.<agent>.json` ×10-11 | 10-11 agents in parallel, each scoped to one vuln class (auth, authorization, injection, upload, misconfiguration, ...); a shared per-stack search cheat sheet locates the relevant code fast before each agent applies its methodology. |
 | Validation | `raw-findings.*.json` | `validated-findings.json` | `validator-agent` re-traces every candidate against the source itself, confirms no missed mitigation, drops false positives, assigns final IDs. |
 | PoC | `validated-findings.json` | `poc/F-*.md` | Manual test steps per Medium-Critical finding, for a human to verify — never auto-executed. |
 | Report | `validated-findings.json`, `poc/*.md` | `report.md` | Executive summary, risk matrix, and findings index, with an explicit "verify before acting" disclaimer. |

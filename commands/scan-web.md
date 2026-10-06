@@ -24,11 +24,11 @@ already this session.
    report why — then dispatch via Task:
    - **01 Recon** → `recon-agent`
    - **02 Mapping** → `mapper-agent`
-   - **03 Testing** → dispatch all 10 as **parallel Task calls in the same
+   - **03 Testing** → dispatch all 11 as **parallel Task calls in the same
      turn**, each writing its own `raw-findings.<agent-name>.json`:
      `auth-agent`, `authorization-agent`, `api-agent`, `sqli-agent`,
      `xss-agent`, `upload-agent`, `business-logic-agent`, `injection-agent`,
-     `dependency-agent`, `secrets-agent`
+     `dependency-agent`, `secrets-agent`, `misconfiguration-agent`
    - **04 Validation** → `validator-agent` (merges all `raw-findings.*.json` first)
    - **05 PoC** → `poc-agent` (only if ≥1 `validated:true` finding)
    - **06 Reporting** → `report-agent`

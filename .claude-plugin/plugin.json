@@ -1,7 +1,7 @@
 {
   "name": "vantage",
   "description": "Artifact-driven, plugin-based multi-agent SAST pipeline for web and mobile app repositories. Web agents cover the OWASP Top 10; mobile agents cover the OWASP Mobile Top 10 (2024, M1-M10). Both share global validation/PoC/reporting agents. Run /vantage:scan-web or /vantage:scan-mobile to scan, then /vantage:fix-issue <id> or /vantage:fix to apply code-level remediation directly to the target repository.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": { "name": "Tino Imam M P" },
   "license": "MIT",
   "keywords": ["security", "sast", "pentest", "owasp", "appsec", "mobile", "masvs"],
@@ -18,6 +18,7 @@
     "./agents/web/injection-agent.md",
     "./agents/web/dependency-agent.md",
     "./agents/web/secrets-agent.md",
+    "./agents/web/misconfiguration-agent.md",
     "./agents/mobile/mobile-recon-agent.md",
     "./agents/mobile/mobile-mapper-agent.md",
     "./agents/mobile/credential-usage-agent.md",

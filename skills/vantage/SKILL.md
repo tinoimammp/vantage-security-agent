@@ -77,14 +77,14 @@ agent file is self-contained — there is no separate phase file to read.
 |---|-------|--------------------|------------------------|
 | 01 | Recon | `recon-agent` | `mobile-recon-agent` |
 | 02 | Mapping | `mapper-agent` | `mobile-mapper-agent` |
-| 03 | Testing | `auth-agent`, `authorization-agent`, `api-agent`, `sqli-agent`, `xss-agent`, `upload-agent`, `business-logic-agent`, `injection-agent`, `dependency-agent`, `secrets-agent` (parallel) | `credential-usage-agent`, `supply-chain-agent`, `mobile-auth-agent`, `mobile-validation-agent`, `mobile-network-agent`, `privacy-agent`, `binary-protection-agent`, `mobile-config-agent`, `mobile-storage-agent`, `mobile-crypto-agent` (parallel; M1-M10) |
+| 03 | Testing | `auth-agent`, `authorization-agent`, `api-agent`, `sqli-agent`, `xss-agent`, `upload-agent`, `business-logic-agent`, `injection-agent`, `dependency-agent`, `secrets-agent`, `misconfiguration-agent` (parallel) | `credential-usage-agent`, `supply-chain-agent`, `mobile-auth-agent`, `mobile-validation-agent`, `mobile-network-agent`, `privacy-agent`, `binary-protection-agent`, `mobile-config-agent`, `mobile-storage-agent`, `mobile-crypto-agent` (parallel; M1-M10) |
 | 04 | Validation | `validator-agent` — same agent, either platform | |
 | 05 | PoC | `poc-agent` — same agent, either platform | |
 | 06 | Reporting | `report-agent` — same agent, either platform | |
 
 Phases run strictly in order 01→06; a phase only starts once its gate
 (defined in `${CLAUDE_PLUGIN_ROOT}/workflow/orchestration.md`) is
-satisfied. Phase 03's 10 agents (whichever platform's set) run in parallel
+satisfied. Phase 03's testing agents (11 web / 10 mobile, whichever platform's set) run in parallel
 and each write their own `raw-findings.<agent-name>.json` — never a shared
 file, and never mix web and mobile agents in the same Phase 03 run.
 
@@ -119,7 +119,7 @@ each forces its platform and runs phases 01-06 in one go.
 For "does this commit/PR introduce a vuln" instead of a full repo review,
 use `/vantage:scan-diff [commit-hash | PR/MR number]`
 (`${CLAUDE_PLUGIN_ROOT}/commands/scan-diff.md`) — **not** part of Phases
-01-06. It diffs the change, dispatches the platform's 10 testing agents
+01-06. It diffs the change, dispatches the platform's testing agents
 scoped to just the changed lines, validates, and generates a PoC per
 Medium-Critical finding — all under a self-contained
 `artifacts/commit-scans/<id>/`. No `report.md` is produced; results are
